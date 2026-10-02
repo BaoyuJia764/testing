@@ -44,11 +44,11 @@
     register(abnormalityPageScripts, scriptId, definition, 'abnormality page script');
   }
 
-  function equipAbnormalityPage(unit, page) {
+  function equipAbnormalityPage(unit, page, event = {}) {
     const equippedPage = (unit.abnormalityPages || []).find((entry) => entry.id === page.id) || page;
     if (!unit.abnormalityPages) unit.abnormalityPages = [];
     if (!unit.abnormalityPages.some((entry) => entry.id === equippedPage.id)) unit.abnormalityPages.push(equippedPage);
-    findAbnormalityPageHandler(equippedPage)?.onEquip?.({ unit, page: equippedPage, applyEffect, applyStatus, scheduleStatus });
+    findAbnormalityPageHandler(equippedPage)?.onEquip?.({ ...event, unit, page: equippedPage, applyEffect, applyStatus, scheduleStatus });
     return equippedPage;
   }
 
@@ -95,6 +95,15 @@
     return status;
   }
 
+  function resolveSpeedRoll(unit, baseSpeed) {
+    let speed = baseSpeed;
+    for (const [statusId, status] of unit.statuses || []) {
+      const adjusted = effects.get(statusId)?.onSpeedRoll?.(unit, speed, status.stacks, status);
+      if (Number.isFinite(adjusted)) speed = adjusted;
+    }
+    return Math.max(1, speed);
+  }
+
   function scheduleStatus(unit, statusId, stacks = 1) {
     if (!unit.pendingStatuses) unit.pendingStatuses = new Map();
     const key = String(statusId);
@@ -103,15 +112,14 @@
 
   function triggerAbnormalityPages(unit, trigger, event = {}) {
     for (const page of unit.abnormalityPages || []) {
-      findAbnormalityPageHandler(page)?.[trigger]?.({
-        ...event,
+      findAbnormalityPageHandler(page)?.[trigger]?.(Object.assign(event, {
         unit,
         currentTarget: event.currentTarget || unit.currentTarget || null,
         random: event.random || Math.random,
         applyEffect,
         applyStatus,
         scheduleStatus,
-      });
+      }));
     }
   }
 
@@ -133,6 +141,7 @@
       else if (status.stacks <= 0) unit.statuses.delete(statusId);
     }
     triggerAbnormalityPages(unit, 'onSceneEnd');
+    unit.previousSceneDamage = unit.sceneDamageTaken || 0;
     unit.sceneDamageTaken = 0;
   }
 
@@ -228,6 +237,7 @@
     createEnemy,
     applyEffect,
     applyStatus,
+    resolveSpeedRoll,
     scheduleStatus,
     equipAbnormalityPage,
     notifyAbnormalityPage,

@@ -365,7 +365,7 @@ function showPageOffer() {
       const librarian = playerFloor.librarians.find((member) => member.id === pageAssignee.value);
       if (!librarian || !progression.chooseAbnormalityPage(playerFloor, librarian.id, page.id)) return;
       const equippedPage = librarian.abnormalityPages.at(-1);
-      combat.equipAbnormalityPage(librarian, equippedPage);
+      combat.equipAbnormalityPage(librarian, equippedPage, { allies: playerFloor.librarians });
       pageChoiceDialog.close();
       updateEmotionDisplay();
       if (playerFloor.pendingPageOffers.length) showPageOffer();
@@ -590,7 +590,7 @@ resolveButton.addEventListener('click', () => {
   if (!state.selectedCard) return;
   const activeLibrarian = playerFloor.librarians[state.actingLibrarianIndex];
   state.displayLibrarianIndex = state.actingLibrarianIndex;
-  combat.startUnitScene(activeLibrarian);
+  combat.startUnitScene(activeLibrarian, { allies: playerFloor.librarians, allEnemies: [activeEnemy] });
   combat.startUnitScene(activeEnemy);
   const enemyDice = combat.resolveCard(activeEnemy.cardIds[0], activeEnemy, activeLibrarian);
   const enemyDamage = enemyDice

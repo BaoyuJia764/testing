@@ -20,6 +20,8 @@ const files = [
   '../combat/effects/protection.js',
   '../combat/effects/vulnerable.js',
   '../combat/effects/paralysis.js',
+  '../combat/effects/binding.js',
+  '../combat/effects/haste.js',
   '../combat/passives/3.js',
   '../combat/cards/13.js',
   '../combat/abnormality-pages/malkuth-ashes.js',
@@ -27,6 +29,11 @@ const files = [
   '../combat/abnormality-pages/script-queenbee1.js',
   '../combat/abnormality-pages/script-fairy1.js',
   '../combat/abnormality-pages/script-fairy2.js',
+  '../combat/abnormality-pages/script-fairy3.js',
+  '../combat/abnormality-pages/script-snowwhite1.js',
+  '../combat/abnormality-pages/script-snowwhite2.js',
+  '../combat/abnormality-pages/script-queenbee3.js',
+  '../combat/abnormality-pages/script-snowwhite3.js',
 ];
 const context = vm.createContext({ window: {}, Map, Math });
 for (const file of files) {
@@ -165,6 +172,56 @@ test('Gluttony gains power and heals when attacking a target already damaged thi
   assert.equal(target.hp, 45);
   registry.endUnitScene(target);
   assert.equal(target.sceneDamageTaken, 0);
+});
+
+test('Predation trades ally HP for selected-librarian healing, Strength, and Haste', () => {
+  const page = context.window.ABNORMALITY_PAGE_CATALOG.find((entry) => entry.id === 'Malkuth:9');
+  const selected = { id: 'selected', hp: 20, maxHp: 100, effects: new Map(), statuses: new Map(), abnormalityPages: [] };
+  const ally = { id: 'ally', hp: 40, maxHp: 50, effects: new Map(), statuses: new Map(), abnormalityPages: [] };
+  registry.equipAbnormalityPage(selected, page, { allies: [selected, ally] });
+  assert.equal(ally.hp, 30);
+  assert.equal(selected.hp, 30);
+  assert.equal(selected.statuses.get('Strength').stacks, 3);
+  assert.equal(selected.statuses.get('Haste').stacks, 3);
+});
+
+test('Vines binds a chosen target and powers Pierce attacks against that target', () => {
+  const page = context.window.ABNORMALITY_PAGE_CATALOG.find((entry) => entry.id === 'Malkuth:13');
+  const attacker = { id: 'vines-user', hp: 30, maxHp: 30, effects: new Map(), statuses: new Map(), abnormalityPages: [page], passiveIds: [], keyPageIds: [] };
+  const target = { id: 'vine-target', hp: 30, maxHp: 30, effects: new Map(), statuses: new Map(), abnormalityPages: [] };
+  registry.startUnitScene(attacker, { allEnemies: [target], random: () => 0 });
+  assert.equal(target.statuses.get('Binding').stacks, 6);
+  const result = registry.resolveCard('2', attacker, target, () => 0);
+  assert.equal(result[0].power, 1);
+  assert.equal(registry.resolveSpeedRoll(target, 5), 1);
+});
+
+test('Barrier of Thorns reflects damage and binds its attacker', () => {
+  const page = context.window.ABNORMALITY_PAGE_CATALOG.find((entry) => entry.id === 'Malkuth:14');
+  const defender = { id: 'thorn-user', hp: 30, maxHp: 30, effects: new Map(), statuses: new Map(), abnormalityPages: [page] };
+  const attacker = { id: 'thorn-attacker', hp: 30, maxHp: 30, effects: new Map(), statuses: new Map(), abnormalityPages: [], passiveIds: [], keyPageIds: [] };
+  registry.resolveCard('2', attacker, defender, () => 0);
+  assert.equal(attacker.hp, 26);
+  assert.equal(attacker.statuses.get('Binding').stacks, 2);
+});
+
+test('Loyalty converts previous-scene damage into ally Strength', () => {
+  const page = context.window.ABNORMALITY_PAGE_CATALOG.find((entry) => entry.id === 'Malkuth:12');
+  const selected = { id: 'loyalty-user', hp: 60, maxHp: 100, previousSceneDamage: 17, effects: new Map(), statuses: new Map(), abnormalityPages: [page] };
+  const ally = { id: 'loyalty-ally', hp: 50, maxHp: 50, effects: new Map(), statuses: new Map(), abnormalityPages: [] };
+  registry.startUnitScene(selected, { allies: [selected, ally] });
+  assert.equal(selected.statuses.get('Strength').stacks, 3);
+  assert.equal(ally.statuses.get('Strength').stacks, 3);
+});
+
+test('Malice damages all enemies more as the selected librarian loses HP', () => {
+  const page = context.window.ABNORMALITY_PAGE_CATALOG.find((entry) => entry.id === 'Malkuth:15');
+  const selected = { id: 'malice-user', hp: 20, maxHp: 100, effects: new Map(), statuses: new Map(), abnormalityPages: [page] };
+  const firstEnemy = { id: 'first-enemy', hp: 50 };
+  const secondEnemy = { id: 'second-enemy', hp: 70 };
+  registry.startUnitScene(selected, { allEnemies: [firstEnemy, secondEnemy] });
+  assert.equal(firstEnemy.hp, 25);
+  assert.equal(secondEnemy.hp, 45);
 });
 
 test('assistant appearance layers and colors are separate from patron combat expressions', () => {

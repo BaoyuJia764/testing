@@ -1,8 +1,9 @@
 const ashesPage = window.ABNORMALITY_PAGE_CATALOG.find((page) => page.id === 'Malkuth:1');
 
-window.CombatRegistry.registerAbnormalityPage('Malkuth:1', {
+window.CombatRegistry.registerAbnormalityPageScript('burnningGirl', {
   name: ashesPage.name,
   source: ashesPage.source,
+  scriptClass: ashesPage.scriptClass,
   onDamaged({ unit, attacker, random, applyStatus }) {
     if (!attacker) return;
     applyStatus(attacker, 'Burn', 1 + Math.floor(random() * 3));
