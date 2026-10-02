@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#11191c">
+    <title>Library of Ruina</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="assets/lor/manifest.js" defer></script>
+    <script src="combat/cards/catalog.js" defer></script>
+    <script src="combat/passives/catalog.js" defer></script>
+    <script src="combat/effects/catalog.js" defer></script>
+    <script src="combat/abnormality-pages/catalog.js" defer></script>
+    <script src="combat/stages/catalog.js" defer></script>
+    <script src="combat/vfx.js" defer></script>
+    <script src="combat/assistant-customization.js" defer></script>
+    <script src="combat/registry.js" defer></script>
+    <script src="combat/effects/bleeding.js" defer></script>
+    <script src="combat/effects/endurance.js" defer></script>
+    <script src="combat/effects/weak.js" defer></script>
+    <script src="combat/effects/disarm.js" defer></script>
+    <script src="combat/effects/protection.js" defer></script>
+    <script src="combat/effects/vulnerable.js" defer></script>
+    <script src="combat/effects/paralysis.js" defer></script>
+    <script src="combat/effects/strength.js" defer></script>
+    <script src="combat/effects/burn.js" defer></script>
+    <script src="combat/passives/3.js" defer></script>
+    <script src="combat/cards/13.js" defer></script>
+    <script src="combat/abnormality-pages/malkuth-ashes.js" defer></script>
+    <script src="combat/abnormality-pages/script-burnningGirl2.js" defer></script>
+    <script src="combat/abnormality-pages/script-queenbee1.js" defer></script>
+    <script src="combat/abnormality-pages/script-fairy1.js" defer></script>
+    <script src="combat/abnormality-pages/script-fairy2.js" defer></script>
+    <script src="combat/enemies.js" defer></script>
+    <script src="combat/progression.js" defer></script>
+    <script src="story/scenes.js" defer></script>
+    <script src="story/dialogue-portraits.js" defer></script>
+    <script src="story/dialogue-local.js" defer></script>
+    <script src="game.js" defer></script>
+  </head>
+  <body>
+    <main class="game-shell">
+      <header class="topbar">
+        <a class="wordmark" href="#arena" aria-label="Library of Ruina home">
+          <span class="wordmark-mark" aria-hidden="true">G</span>
+          <span>LIBRARY OF RUINA</span>
+        </a>
+        <div class="chapter-label"><span class="status-dot"></span> FIELD NOTE 01 <span class="divider">/</span> THE FLOODED ATRIUM</div>
+        <button class="icon-button" id="story-toggle" type="button" aria-expanded="false" aria-controls="story-panel" title="Toggle field note">
+          <span aria-hidden="true">≡</span><span class="button-label">FIELD NOTE</span>
+        </button>
+        <button class="icon-button" id="asset-open" type="button" title="Browse sprite and background collections">
+          <span aria-hidden="true">▧</span><span class="button-label">ART INDEX</span>
+        </button>
+        <button class="icon-button" id="catalog-open" type="button" title="Browse cards, passives, effects, and abnormality pages">
+          <span aria-hidden="true">▤</span><span class="button-label">CATALOG</span>
+        </button>
+      </header>
+
+      <section class="battle-layout" id="arena" aria-label="Battlefield">
+        <aside class="roster-panel" aria-label="Expedition roster">
+          <div class="panel-kicker">EXPEDITION <span>01 / 03</span></div>
+          <h1>Crossing<br>the Atrium</h1>
+          <p class="panel-copy">A signal is still sounding beneath the waterline.</p>
+          <div class="roster-heading"><span>YOUR CREW</span><span>VIT</span></div>
+          <div class="crew-member" data-member="mira">
+            <div class="portrait portrait-coral" aria-hidden="true">MV</div>
+            <div class="crew-info"><strong>Mira Vale</strong><span>Pathfinder</span></div>
+            <div class="vitality"><i style="--health: 0.84"></i></div>
+            <span class="vitality-number">42</span>
+          </div>
+          <div class="crew-member" data-member="orin">
+            <div class="portrait portrait-blue" aria-hidden="true">OR</div>
+            <div class="crew-info"><strong>Orin Reed</strong><span>Signal keeper</span></div>
+            <div class="vitality"><i style="--health: 0.68"></i></div>
+            <span class="vitality-number">34</span>
+          </div>
+          <div class="crew-member" data-member="sable">
+            <div class="portrait portrait-gold" aria-hidden="true">SY</div>
+            <div class="crew-info"><strong>Sable Yoon</strong><span>Field medic</span></div>
+            <div class="vitality"><i style="--health: 1"></i></div>
+            <span class="vitality-number">50</span>
+          </div>
+          <div class="roster-footer"><span>ROUND</span><strong id="round-number">01</strong><span class="footer-rule"></span><span>DRAW</span><strong>03</strong></div>
+          <div class="emotion-panel" aria-label="Floor emotion progress">
+            <div class="emotion-heading"><span>FLOOR EMOTION</span><strong id="team-emotion-level">0</strong></div>
+            <div class="emotion-track"><i id="member-emotion-progress"></i></div>
+            <div class="emotion-caption" id="emotion-caption">Mira Vale · 0 / 3 coins</div>
+          </div>
+        </aside>
+
+        <div class="arena-column">
+          <div class="arena-heading"><span><i class="live-mark"></i> LIVE ENCOUNTER</span><select class="stage-select" id="stage-select" aria-label="Select reception"></select></div>
+          <div class="canvas-frame">
+            <canvas id="battle-canvas" aria-label="Battle scene with player and enemy placeholders">
+              Your browser does not support the HTML canvas element.
+            </canvas>
+            <div class="scene-coordinate" aria-hidden="true">34° 02' N&nbsp; / &nbsp;07° 18' E</div>
+            <div class="scene-caption"><span id="enemy-caption">UNMAPPED ENTITY</span><span>THREAT LEVEL <b>02</b></span></div>
+          </div>
+          <section class="hand-area" aria-label="Card hand">
+            <div class="hand-heading"><h2>TACTICAL DRAW</h2><span>CHOOSE A MANEUVER</span></div>
+            <div class="card-hand" id="card-hand">
+              <button class="action-card" type="button" data-card="Quickstep" aria-pressed="false">
+                <span class="card-cost">1</span><span class="card-type">MOTION</span><strong>Quickstep</strong><span class="card-rule"></span><span class="card-description">Shift position. Gain 4 guard.</span><span class="card-index">01</span>
+              </button>
+              <button class="action-card" type="button" data-card="Rising Current" aria-pressed="false">
+                <span class="card-cost">2</span><span class="card-type">STRIKE</span><strong>Rising Current</strong><span class="card-rule"></span><span class="card-description">Deal 8 impact. Push back.</span><span class="card-index">02</span>
+              </button>
+              <button class="action-card" type="button" data-card="Quiet Signal" aria-pressed="false">
+                <span class="card-cost">1</span><span class="card-type">SUPPORT</span><strong>Quiet Signal</strong><span class="card-rule"></span><span class="card-description">Restore 3 vitality to an ally.</span><span class="card-index">03</span>
+              </button>
+              <div class="hand-empty" aria-hidden="true"><span>+</span><small>DRAW PILE</small></div>
+            </div>
+            <div class="hand-footer"><span id="selection-status" aria-live="polite">No maneuver selected</span><button class="resolve-button" id="resolve-turn" type="button" disabled><span>RESOLVE TURN</span><span aria-hidden="true">↗</span></button></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="story-panel" id="story-panel" hidden>
+        <div class="story-index">FIELD NOTE <span>01</span></div>
+        <div class="story-content">
+          <h2 id="story-title"></h2>
+          <div class="story-line-layout"><img class="story-portrait" id="story-portrait" alt="" hidden><div class="story-lines" id="story-lines"></div></div>
+          <div class="story-navigation"><button id="story-previous" type="button" disabled>PREVIOUS</button><span id="story-progress"></span><button id="story-next" type="button">NEXT</button></div>
+          <a class="story-source" id="story-source" hidden target="_blank" rel="noreferrer">OPEN EPISODE SOURCE ↗</a>
+        </div>
+        <button class="close-story" id="story-close" type="button" aria-label="Close field note">×</button>
+      </section>
+
+      <dialog class="asset-dialog page-choice-dialog" id="page-choice-dialog" aria-labelledby="page-choice-title">
+        <div class="asset-dialog-header">
+          <div><span class="asset-eyebrow">FLOOR OF MALKUTH</span><h2 id="page-choice-title">Abnormality page unlocked</h2></div>
+          <button class="close-story" id="page-choice-close" type="button" aria-label="Close page choices">×</button>
+        </div>
+        <div class="page-choice-meta" id="page-choice-meta"></div>
+        <label class="page-assignee">ASSIGN TO
+          <select id="page-assignee"></select>
+        </label>
+        <div class="page-choice-options" id="page-choice-options"></div>
+      </dialog>
+
+      <dialog class="asset-dialog catalog-dialog" id="catalog-dialog" aria-labelledby="catalog-title">
+        <div class="asset-dialog-header">
+          <div><span class="asset-eyebrow">SYNCED COMBAT CONTENT</span><h2 id="catalog-title">Combat catalog</h2></div>
+          <button class="close-story" id="catalog-close" type="button" aria-label="Close combat catalog">×</button>
+        </div>
+        <div class="catalog-controls">
+          <label>CONTENT TYPE
+            <select id="catalog-kind">
+              <option value="cards">Combat cards</option>
+              <option value="passives">Passives</option>
+              <option value="effects">Effects</option>
+              <option value="abnormalityPages">Abnormality pages</option>
+            </select>
+          </label>
+          <label>SEARCH
+            <input id="catalog-search" type="search" placeholder="Name, ID, floor, or type" autocomplete="off">
+          </label>
+        </div>
+        <p class="catalog-status" id="catalog-status" aria-live="polite"></p>
+        <div class="catalog-list" id="catalog-list"></div>
+        <div class="catalog-pagination">
+          <button id="catalog-previous" type="button" aria-label="Previous catalog page">←</button>
+          <span id="catalog-page-label"></span>
+          <button id="catalog-next" type="button" aria-label="Next catalog page">→</button>
+        </div>
+      </dialog>
+
+      <dialog class="asset-dialog" id="asset-dialog" aria-labelledby="asset-title">
+        <div class="asset-dialog-header">
+          <div><span class="asset-eyebrow">WIKI.GG COLLECTIONS</span><h2 id="asset-title">Art index</h2></div>
+          <button class="close-story" id="asset-close" type="button" aria-label="Close art index">×</button>
+        </div>
+        <div class="asset-controls">
+          <label>COLLECTION
+            <select id="asset-category">
+              <option value="">Choose a collection</option>
+              <option value="story">Story backgrounds</option>
+              <option value="battle">Battle backgrounds</option>
+              <option value="abnormalityBackgrounds">Abnormality battle backgrounds</option>
+              <option value="ui">UI images</option>
+              <option value="dialogue">Dialogue profile sprites</option>
+              <option value="dialogueGallery">Character dialogue gallery</option>
+              <option value="librarian">Librarian combat sprites</option>
+              <option value="enemy">Enemy sprites</option>
+              <option value="abnormality">Abnormality sprites</option>
+              <option value="combat">All combat sprites</option>
+            </select>
+          </label>
+          <label>APPLY TO
+            <select id="asset-slot">
+              <option value="scene">Scene background</option>
+              <option value="player">Player sprite</option>
+              <option value="enemy">Opponent sprite</option>
+              <option value="crew">Crew portrait</option>
+              <option value="vfx">VFX sprite</option>
+              <option value="assistant-body">Assistant: body projection</option>
+              <option value="assistant-hairRear">Assistant: rear hair</option>
+              <option value="assistant-skin">Assistant: skin layer</option>
+              <option value="assistant-eyes">Assistant: eyes</option>
+              <option value="assistant-eyebrows">Assistant: eyebrows</option>
+              <option value="assistant-mouth">Assistant: mouth</option>
+              <option value="assistant-hairFront">Assistant: front hair</option>
+              <option value="assistant-idle">Assistant: idle expression</option>
+              <option value="assistant-attack">Assistant: attack expression</option>
+              <option value="assistant-hit">Assistant: hit expression</option>
+              <option value="assistant-block">Assistant: block expression</option>
+              <option value="assistant-evade">Assistant: evade expression</option>
+            </select>
+          </label>
+          <div class="assistant-custom-controls" id="assistant-custom-controls" hidden>
+            <label>ASSISTANT
+              <select id="assistant-custom-target"></select>
+            </label>
+            <label>HAIR COLOR<input id="assistant-hair-color" type="color" value="#332b2a"></label>
+            <label>EYE COLOR<input id="assistant-eye-color" type="color" value="#8fb9b3"></label>
+            <label>SKIN COLOR<input id="assistant-skin-color" type="color" value="#d8bca7"></label>
+          </div>
+          <label class="asset-search">FILTER
+            <input id="asset-search" type="search" placeholder="Search names" autocomplete="off">
+          </label>
+          <div class="vfx-settings" id="vfx-settings" hidden>
+            <label>COLUMNS<input id="vfx-columns" type="number" min="1" max="32" value="1"></label>
+            <label>ROWS<input id="vfx-rows" type="number" min="1" max="32" value="1"></label>
+            <label>FRAME MS<input id="vfx-frame-duration" type="number" min="16" max="2000" value="70"></label>
+          </div>
+        </div>
+        <p class="asset-status" id="asset-status" aria-live="polite">Choose a collection to browse its images.</p>
+        <div class="asset-grid" id="asset-grid" aria-live="polite"></div>
+        <div class="asset-attribution">Images are previewed from <a href="https://libraryofruina.wiki.gg/wiki/Library_of_Ruina_Wiki" target="_blank" rel="noreferrer">Library of Ruina Wiki</a>. Select an image to assign it to the chosen slot.</div>
+      </dialog>
+      <footer class="bottomline"><span>THE GLASS MERIDIAN</span><span>PROTOTYPE BUILD <i>·</i> 0.1</span></footer>
+    </main>
+  </body>
+</html>

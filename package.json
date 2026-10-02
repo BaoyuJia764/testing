@@ -1,0 +1,13 @@
+{
+  "name": "library-of-ruina-prototype",
+  "private": true,
+  "scripts": {
+    "sync:combat-data": "node scripts/sync-tiphereth-catalog.mjs",
+    "sync:assets": "node scripts/sync-assets.mjs",
+    "test:progression": "node --test tests/progression.test.mjs",
+    "test:combat": "node --test tests/*.test.mjs"
+  },
+  "devDependencies": {
+    "cheerio": "^1.1.2"
+  }
+}
